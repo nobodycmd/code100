@@ -19,7 +19,7 @@ $this->title = 'My Yii Application';
 
                 <p>写于5月6日凌晨2点半</p>
 
-                <div><a target="_blank">https://github.com/nobodycmd/code100</a></div>
+                <p>github: <a target="_blank">https://github.com/nobodycmd/code100</a></p>
 
             </div>
         </div>
@@ -54,7 +54,10 @@ $('.select-on-check-all').click(function(){
 });
 $('#btnCanel').click(function(){
     var keys = $('#grid').yiiGridView('getSelectedRows');
-    if(keys.length>0)$('.select-on-check-all').click();
+    if(keys.length>0){
+        $('.select-on-check-all').click();
+        $('.select-on-check-all').click();
+    }
 });
 EOF;
         $this->registerJs($js);
