@@ -2,6 +2,9 @@
 
 namespace frontend\controllers;
 
+use common\helpers\ExcelHelperV2;
+use common\models\base\SearchModel;
+use common\models\Supplier;
 use frontend\models\ResendVerificationEmailForm;
 use frontend\models\VerifyEmailForm;
 use Yii;
@@ -68,15 +71,46 @@ class SiteController extends Controller
         ];
     }
 
-    /**
-     * Displays homepage.
-     *
-     * @return mixed
-     */
+
     public function actionIndex()
     {
-        return $this->render('index');
+        $searchModel = new SearchModel(
+            [
+                'defaultOrder' => ['id' => SORT_DESC],
+                'model' => Supplier::class,
+                'scenario' => 'default',
+                'partialMatchAttributes' => ['code','title'], // 模糊查询
+                'pageSize' => 10
+            ]
+        );
+
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render($this->action->id, [
+            'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel
+        ]);
     }
+
+    public function actionExport(){
+        $export = new ExcelHelperV2();
+        $export->setTitle(['id','code','name','status']);
+        $aryList = Supplier::find()->where([
+            'id' => explode(',',Yii::$app->getRequest()->get('id')),
+        ])->asArray()->all();
+        foreach ($aryList as $one)
+        {
+            $export->setData([
+                $one['id'],
+                $one['code'],
+                $one['name'],
+                $one['t_status'],
+            ]);
+        }
+        $export->downLoad();
+        return '';
+    }
+
 
     /**
      * Logs in a user.

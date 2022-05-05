@@ -6,48 +6,97 @@ $this->title = 'My Yii Application';
 ?>
 <div class="site-index">
 
-    <div class="jumbotron text-center bg-transparent">
-        <h1 class="display-4">Congratulations!</h1>
-
-        <p class="lead">You have successfully created your Yii-powered application.</p>
-
-        <p><a class="btn btn-lg btn-success" href="http://www.yiiframework.com">Get started with Yii</a></p>
-    </div>
-
     <div class="body-content">
 
         <div class="row">
-            <div class="col-lg-4">
-                <h2>Heading</h2>
+            <div class="col">
 
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
+                <h2>选手姓名：张荣芳</h2>
 
-                <p><a class="btn btn-outline-secondary" href="http://www.yiiframework.com/doc/">Yii Documentation &raquo;</a></p>
-            </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
+                <p>wx:howyagoing</p>
 
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
+                <p>最近几天都要帮朋友帮项目，下周5才有时间沟通，如果有兴趣进一步沟通</p>
 
-                <p><a class="btn btn-outline-secondary" href="http://www.yiiframework.com/forum/">Yii Forum &raquo;</a></p>
-            </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
+                <p>写于5月6日凌晨2点半</p>
 
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-outline-secondary" href="http://www.yiiframework.com/extensions/">Yii Extensions &raquo;</a></p>
             </div>
         </div>
+
+        <?php
+
+
+
+        echo \yii\helpers\Html::a('export','###',[
+            'class' => 'btn btn-primary btn-export',
+        ]);
+        echo \yii\helpers\Html::a('0 item is choose','###',[
+            'id' => 'txtDisplay'
+        ]);
+        echo \yii\helpers\Html::a('cancel all choose','###',[
+            'id' => 'btnCanel',
+            'class' => 'btn'
+        ]);
+
+        $js = <<<EOF
+$('.btn-export').click(function(){
+    var keys = $('#grid').yiiGridView('getSelectedRows');
+    console.log(keys);
+    if(keys.length == 0){
+        alert('no items');
+        return;
+    }
+    location = '/site/export?id='+keys.join(',');
+});
+$('.select-on-check-all').click(function(){
+    setTimeout((e)=>{showInfo();},100);
+});
+$('#btnCanel').click(function(){
+    var keys = $('#grid').yiiGridView('getSelectedRows');
+    if(keys.length>0)$('.select-on-check-all').click();
+});
+EOF;
+        $this->registerJs($js);
+        echo \yii\grid\GridView::widget([
+            'options' => [
+                'id' => 'grid',
+            ],
+            'dataProvider' => $dataProvider,
+            'filterModel' => $searchModel,
+            'columns' => [
+                [
+                    'class' => 'yii\grid\CheckboxColumn',
+//            'name' => 'id',
+                    'checkboxOptions' => function ($model, $key, $index, $column) {
+                        return [
+                            'value' => $model->id,
+                            'onclick' => 'showInfo()',
+                            'class' => 'ck'
+                        ];
+                    },
+                ],
+                'id',
+                'name',
+                'code',
+                [
+                    'attribute' => 't_status',
+                    'filter' => \yii\helpers\Html::activeDropDownList($searchModel,'t_status',[
+                        'ok'=>'okay',
+                        'hold'=>'hold',
+                    ], [
+                        'prompt' => 'All',
+                        'class' => 'form-control'
+                    ])
+                ]
+            ]
+        ]);
+        ?>
+
+        <script>
+            function showInfo(){
+                var keys = $('#grid').yiiGridView('getSelectedRows');
+                $('#txtDisplay').html(keys.length + 'items had been choose');
+            }
+        </script>
 
     </div>
 </div>
