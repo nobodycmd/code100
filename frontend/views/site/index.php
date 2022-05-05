@@ -19,6 +19,8 @@ $this->title = 'My Yii Application';
 
                 <p>写于5月6日凌晨2点半</p>
 
+                <div><a target="_blank">https://github.com/nobodycmd/code100</a></div>
+
             </div>
         </div>
 
